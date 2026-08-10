@@ -1,0 +1,18 @@
+{
+  "name": "ai-transparent-toolkit",
+  "version": "1.0.0",
+  "description": "Lokaal grote (video)bestanden labelen conform Art. 50 EU AI Act; het ondertekende rapport komt in de online omgeving van AI Transparent (app.aitransparent.eu). De content zelf verlaat je machine nooit.",
+  "type": "module",
+  "bin": {
+    "ait": "./ait.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/learningtour/ai-transparent-toolkit.git"
+  },
+  "homepage": "https://aitransparent.eu"
+}

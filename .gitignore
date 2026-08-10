@@ -1,0 +1,4 @@
+node_modules/
+*.ailabel.*
+*.manifest.json
+.DS_Store
