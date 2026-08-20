@@ -1,7 +1,7 @@
 {
   "name": "glu-scan",
   "version": "1.0.0",
-  "description": "Privacyscan vóór upload naar de GLU Analysetool: controleert bestanden lokaal op persoonsgegevens met patronen en een lokaal taalmodel (LM Studio, Ollama). Er gaat niets naar internet.",
+  "description": "Privacyscan vóór upload naar de GLU Analysetool (Node-versie; glu_scan.py is dezelfde scanner als één Python-bestand). Controleert bestanden lokaal op persoonsgegevens met patronen en een lokaal taalmodel.",
   "type": "module",
   "bin": {
     "glu-scan": "./glu-scan.js"
@@ -18,12 +18,16 @@
   "homepage": "https://aitransparent.eu",
   "scripts": {
     "test": "node --test test/*.test.js",
-    "start": "node glu-scan.js ui",
-    "build": "node build/bouw.mjs"
+    "start": "node glu-scan.js ui"
   },
-  "devDependencies": {
-    "esbuild": "^0.28.0",
-    "postject": "^1.0.0-alpha.6"
-  },
-  "keywords": ["avg", "gdpr", "privacy", "pii", "lm-studio", "ollama", "lokale-ai", "onderwijs"]
+  "keywords": [
+    "avg",
+    "gdpr",
+    "privacy",
+    "pii",
+    "lm-studio",
+    "ollama",
+    "lokale-ai",
+    "onderwijs"
+  ]
 }

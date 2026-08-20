@@ -7,8 +7,8 @@ materiaal blijft op je eigen machine.
   conform Artikel 50 van de EU AI Act. Voor wie met de terminal werkt.
 - **`glu-scan`** ([map `glu-scan/`](glu-scan/)) — satelliet van de GLU
   Analysetool: bestanden met **lokale AI** controleren op persoonsgegevens
-  *vóór* je ze uploadt. Ook te downloaden als kant-en-klaar programma voor
-  Mac en Windows, zonder installatie.
+  *vóór* je ze uploadt. Eén Python-bestand dat je downloadt en start; werkt op
+  Mac en Windows.
 
 ## ait — labelen conform Art. 50
 
@@ -103,20 +103,19 @@ maand telt wel mee.
 Satelliet van de **GLU Analysetool** in de map [`glu-scan/`](glu-scan/).
 Controleert bestanden op persoonsgegevens voordat ze geüpload worden, met een
 lokaal taalmodel in LM Studio of Ollama. Geen account, geen internetverbinding,
-geen bestand dat je machine verlaat.
+geen bestand dat je computer verlaat.
 
-**Downloaden en starten** (geen installatie, Node.js zit erin): pak op de
-[releasepagina](https://github.com/learningtour/ai-transparent-toolkit/releases)
-het bestand voor Mac of Windows, pak het uit en dubbelklik *Start GLU Scan*.
-Je browser opent een venster waar je bestanden in sleept.
+**Beginnen:** download `glu_scan.py` en de startknop voor jouw computer
+(`Start GLU Scan.command` op Mac, `Start GLU Scan.bat` op Windows), zet ze in
+dezelfde map en dubbelklik. Je browser opent een venster waar je bestanden in
+sleept. Verder is er niets te installeren; alleen Python 3 moet aanwezig zijn.
 
 Of vanaf de commandoregel:
 
 ```bash
-cd glu-scan && npm link
-glu-scan ui                          # web-app: sleep je bestanden erin
-glu-scan scan uploads/               # of een hele map in één keer
-glu-scan scan dossier.docx --zonder-ai   # zonder model: alleen patronen
+python3 glu_scan.py                                  # het venster openen
+python3 glu_scan.py scan uploads/                    # een hele map
+python3 glu_scan.py scan dossier.docx --zonder-ai    # zonder model: alleen patronen
 ```
 
 Twee lagen die elkaar aanvullen:
@@ -133,19 +132,20 @@ Twee lagen die elkaar aanvullen:
    Fragmenten die het model verzint maar niet in het document staan, worden
    weggefilterd.
 
-Leesbaar: txt, md, csv, json, html, docx, xlsx, pptx, odt, pdf, rtf — en met
-`--visie` ook afbeeldingen. De bestandsnaam wordt meegescand.
+Leesbaar: txt, md, csv, json, html, docx, xlsx, pptx, odt, pdf, rtf. De
+bestandsnaam wordt meegescand.
 
 De exitcode maakt er een poortwachter van: **0** = onder de drempel, **2** =
 persoonsgegevens gevonden (niet uploaden), **1** = fout.
 
 ```bash
-glu-scan scan uploads/ --stil --json rapport.json || echo "eerst opschonen"
+python3 glu_scan.py scan uploads/ --stil --json rapport.json || echo "eerst opschonen"
 ```
 
-Waarden staan gemaskeerd in het rapport (`11•••••33`), de web-app luistert
-alleen op `127.0.0.1`, en een niet-lokaal AI-endpoint wordt geweigerd tenzij je
-daar expliciet om vraagt. Meer: [glu-scan/README.md](glu-scan/README.md) en de
+Waarden staan gemaskeerd in het rapport (`11•••••33`), het venster luistert
+alleen op `127.0.0.1`, en een niet-lokale AI-server wordt geweigerd tenzij je
+daar expliciet om vraagt. Dezelfde scanner bestaat ook in Node.js voor wie al
+met `ait` werkt. Meer: [glu-scan/README.md](glu-scan/README.md) en de
 [handleiding](glu-scan/HANDLEIDING.md).
 
 ## English
@@ -162,9 +162,9 @@ needs no account.
 Analysetool: it scans files for personal data *before* they are uploaded, using
 deterministic checks (BSN eleven-proof, IBAN mod-97, Luhn) plus a local LLM
 served by LM Studio or Ollama. Nothing is sent anywhere — no account, no
-internet. Ready-to-run builds for macOS and Windows are on the
-[releases page](https://github.com/learningtour/ai-transparent-toolkit/releases);
-no Node.js install required. See [glu-scan/README.md](glu-scan/README.md).
+internet. Ships as a single Python file (`glu_scan.py`, standard library only)
+with double-click starters for macOS and Windows; a Node.js version of the same
+scanner is included for `ait` users. See [glu-scan/README.md](glu-scan/README.md).
 
 ---
 

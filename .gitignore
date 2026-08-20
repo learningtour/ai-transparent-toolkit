@@ -7,5 +7,7 @@ node_modules/
 glu-scan-rapport.*
 
 glu-scan/dist/
+__pycache__/
+*.pyc
 glu-scan/pakket/
 *.zip

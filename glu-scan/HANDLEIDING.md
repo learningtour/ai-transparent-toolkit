@@ -13,23 +13,19 @@ niet zomaar op een server terecht te komen — ook niet bij de controle daarop.
 
 ## Snel beginnen
 
-Kant-en-klaar programma voor Mac of Windows:
-[releasepagina](https://github.com/learningtour/ai-transparent-toolkit/releases)
-→ uitpakken → dubbelklik **Start GLU Scan**.
-
-Vanuit de broncode, met Node 20+:
+Download `glu_scan.py` plus de startknop voor jouw computer, zet ze in dezelfde
+map en dubbelklik de startknop. Of vanaf de commandoregel:
 
 ```bash
-git clone https://github.com/learningtour/ai-transparent-toolkit.git
-cd ai-transparent-toolkit/glu-scan
-npm link                    # maakt het commando `glu-scan` beschikbaar
-
-glu-scan ui                 # web-app: sleep je bestanden erin
-glu-scan scan uploads/      # of vanaf de commandoregel
+python3 glu_scan.py               # het venster openen
+python3 glu_scan.py scan uploads/ # of meteen scannen
 ```
 
-De scanner gebruikt geen npm-dependencies; alleen het bouwen van het
-zelfstandige programma doet dat.
+Vereist Python 3.9 of nieuwer, verder niets: het programma gebruikt alleen de
+standaardbibliotheek.
+
+Dezelfde scanner bestaat ook in Node.js voor wie al met `ait` werkt:
+`cd glu-scan && npm link`, daarna `glu-scan ui`. Beide versies doen hetzelfde.
 
 ## Een lokaal model klaarzetten
 
@@ -42,19 +38,19 @@ zelfstandige programma doet dat.
 
 ```bash
 ollama pull llama3.1
-glu-scan config --endpoint http://localhost:11434/v1 --model llama3.1
+python3 glu_scan.py config --endpoint http://localhost:11434/v1 --model llama3.1
 ```
 
 Controleren of het werkt:
 
 ```bash
-glu-scan modellen
+python3 glu_scan.py modellen
 ```
 
 Geen model? Dan werkt de patrooncontrole gewoon door:
 
 ```bash
-glu-scan scan dossier.docx --zonder-ai
+python3 glu_scan.py scan dossier.docx --zonder-ai
 ```
 
 ## De twee lagen van de scan
@@ -124,7 +120,7 @@ uploadknop: **0** = onder de drempel, **2** = boven de drempel (niet uploaden),
 **1** = fout. De drempel staat standaard op `middel`:
 
 ```bash
-glu-scan scan uploads/ --stil --json rapport.json || {
+python3 glu_scan.py scan uploads/ --stil --json rapport.json || {
   echo "Er staan persoonsgegevens in — upload geblokkeerd."
   exit 1
 }
@@ -133,7 +129,7 @@ glu-scan scan uploads/ --stil --json rapport.json || {
 ## Opties
 
 ```
-glu-scan scan <bestand of map…>
+python3 glu_scan.py scan <bestand of map…>
   --zonder-ai            alleen patrooncontrole
   --visie                afbeeldingen laten lezen door een visiemodel
   --redigeer             geschoonde kopie schrijven (alleen platte tekst)
@@ -146,17 +142,17 @@ glu-scan scan <bestand of map…>
   --max-stukken <n>      hoeveel tekstblokken maximaal naar de AI gaan
   --stil                 geen uitvoer, alleen exitcode en rapporten
 
-glu-scan ui [--poort 7817]     lokale web-app
-glu-scan modellen              welke modellen draaien er lokaal?
-glu-scan config [--…]          instellingen tonen of wijzigen
+python3 glu_scan.py ui        het venster openen
+python3 glu_scan.py modellen  welke modellen draaien er lokaal?
+python3 glu_scan.py config    instellingen tonen of wijzigen
 ```
 
-Instellingen staan in `~/.config/ai-transparent/glu-scan.json` (0600).
+Instellingen staan in `~/.config/ai-transparent/glu-scan.json` (alleen leesbaar voor jou).
 
 ## Redigeren
 
 ```bash
-glu-scan scan notulen.txt --redigeer
+python3 glu_scan.py scan notulen.txt --redigeer
 # → notulen.geschoond.txt
 ```
 
@@ -194,34 +190,9 @@ Een scan is een hulpmiddel, geen garantie en geen juridisch advies.
 
 ```bash
 cd glu-scan
-npm test
+python3 -m unittest -v      # de Python-versie (28 tests)
+npm test                    # de Node-versie (29 tests)
 ```
 
-De testsuite draait de AI-kant tegen een nagebootste LM Studio-server, dus er
-hoeft geen model geïnstalleerd te zijn om de keten te controleren.
-
-## Zelf een zelfstandig programma bouwen
-
-```bash
-cd glu-scan
-npm install
-npm run build
-```
-
-Het resultaat komt in `glu-scan/dist/` en werkt zonder dat Node.js
-geïnstalleerd is. De bouwstap bundelt alle modules tot één bestand (esbuild),
-maakt daar een startblok van (Node's *single executable application*) en plakt
-dat in een kopie van Node zelf (postject). Op macOS wordt het resultaat opnieuw
-ondertekend, anders weigert het systeem het te starten.
-
-Bouwen kan alleen voor het besturingssysteem waar je op werkt. Alle platforms
-tegelijk gaat via GitHub: push een tag `glu-scan-v1.0.0` en
-`.github/workflows/glu-scan.yml` bouwt Mac (Apple Silicon en Intel), Windows en
-Linux, en hangt de zip-bestanden onder Releases.
-
-De programma's zijn **niet ondertekend** bij Apple of Microsoft. Gebruikers
-krijgen daarom eenmalig een waarschuwing (zie `build/starters/LEESMIJ.txt`).
-Wil je die waarschuwing weg, dan is een Apple Developer-account met
-notarisatie en een Windows-codesigningcertificaat nodig; die stap zit bewust
-niet in dit script, want daar horen sleutels bij die niet in een repository
-thuishoren.
+Beide testsuites draaien de AI-kant tegen een nagebootste LM Studio-server, dus
+er hoeft geen model geïnstalleerd te zijn om de keten te controleren.
