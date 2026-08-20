@@ -348,7 +348,9 @@ const HELP = `${bold('AI Transparent toolkit')} — lokaal grote bestanden label
 
 De content blijft op deze machine; alleen de SHA-256-fingerprint en metadata
 gaan naar het register. --badge brandt de zichtbare disclosure in de eerste
-6 seconden van de video (hercodeert; zonder --badge is het stream copy).`;
+6 seconden van de video (hercodeert; zonder --badge is het stream copy).
+
+${dim('Bestanden controleren op persoonsgegevens vóór upload: glu-scan (zie docs/glu-scan.md)')}`;
 
 try {
   switch (cmd) {

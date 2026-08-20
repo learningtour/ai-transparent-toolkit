@@ -1,5 +1,16 @@
 # AI Transparent toolkit
 
+Twee commandoregelprogramma's die hetzelfde uitgangspunt delen: gevoelig
+materiaal blijft op je eigen machine.
+
+- **`ait`** — lokaal **grote video- en audiobestanden** labelen conform
+  Artikel 50 van de EU AI Act.
+- **`glu-scan`** — satelliet van de GLU Analysetool: bestanden met **lokale AI**
+  controleren op persoonsgegevens *vóór* je ze uploadt.
+  Zie [docs/glu-scan.md](docs/glu-scan.md).
+
+## ait — labelen conform Art. 50
+
 CLI voor het lokaal labelen van **grote video- en audiobestanden** conform
 Artikel 50 van de EU AI Act — zonder dat de content je machine verlaat.
 
@@ -26,7 +37,7 @@ Vereist: [Node 20+](https://nodejs.org) en [ffmpeg](https://ffmpeg.org)
 ```bash
 git clone https://github.com/learningtour/ai-transparent-toolkit.git
 cd ai-transparent-toolkit
-npm link        # maakt het commando `ait` overal beschikbaar
+npm link        # maakt `ait` en `glu-scan` overal beschikbaar
 ```
 
 Of zonder git, als los bestand:
@@ -86,6 +97,47 @@ zonder `--badge` is het pure stream copy zonder kwaliteitsverlies.
 Uploadlimieten van je abonnement gelden hier niet; het aantal labels per
 maand telt wel mee.
 
+## glu-scan — privacyscan vóór upload
+
+Satelliet van de **GLU Analysetool**. Controleert bestanden op persoonsgegevens
+voordat ze geüpload worden, met een lokaal taalmodel in LM Studio of Ollama.
+Geen account nodig, geen internetverbinding, geen bestand dat je machine verlaat.
+
+```bash
+glu-scan ui                          # web-app: sleep je bestanden erin
+glu-scan scan uploads/               # of vanaf de commandoregel
+glu-scan scan dossier.docx --zonder-ai   # zonder model: alleen patronen
+```
+
+Twee lagen die elkaar aanvullen:
+
+1. **Patronen met echte validatie** — BSN via de elfproef, IBAN via mod-97,
+   betaalkaart via Luhn, plus e-mail, telefoon, postcode, geboortedatum,
+   paspoort-, BIG- en leerlingnummer, wachtwoorden en sleutels. Daarnaast
+   signalen voor de bijzondere categorieën van artikel 9 AVG: gezondheid,
+   etniciteit, religie, politiek, seksuele geaardheid, strafrecht, biometrie —
+   die wegen alleen zwaar als er in hetzelfde bestand ook iemand
+   identificeerbaar is.
+2. **Lokale AI** — voor namen, adressen in lopende tekst en indirect
+   identificerende combinaties die je met patronen nooit betrouwbaar vindt.
+   Fragmenten die het model verzint maar niet in het document staan, worden
+   weggefilterd.
+
+Leesbaar: txt, md, csv, json, html, docx, xlsx, pptx, odt, pdf, rtf — en met
+`--visie` ook afbeeldingen. De bestandsnaam wordt meegescand.
+
+De exitcode maakt er een poortwachter van: **0** = onder de drempel, **2** =
+persoonsgegevens gevonden (niet uploaden), **1** = fout.
+
+```bash
+glu-scan scan uploads/ --stil --json rapport.json || echo "eerst opschonen"
+```
+
+Waarden staan gemaskeerd in het rapport (`11•••••33`), de web-app luistert
+alleen op `127.0.0.1`, en een niet-lokaal AI-endpoint wordt geweigerd tenzij je
+daar expliciet om vraagt. Volledige documentatie:
+[docs/glu-scan.md](docs/glu-scan.md).
+
 ## English
 
 Local labeling of large video/audio files under Article 50 of the EU AI Act.
@@ -95,6 +147,11 @@ embeds the label locally (stream copy). Requires an
 [AI Transparent](https://aitransparent.eu) API key (Pro/Premium) — labeling
 does not work without the service. `ait check` (detection) is public and
 needs no account.
+
+`glu-scan` is a satellite for the GLU Analysetool: it scans files for personal
+data *before* they are uploaded, using deterministic checks (BSN eleven-proof,
+IBAN mod-97, Luhn) plus a local LLM served by LM Studio or Ollama. Nothing is
+sent anywhere — no account, no internet. See [docs/glu-scan.md](docs/glu-scan.md).
 
 ---
 
