@@ -15,9 +15,6 @@
     "url": "https://github.com/learningtour/ai-transparent-toolkit.git"
   },
   "homepage": "https://aitransparent.eu",
-  "scripts": {
-    "test": "npm test --prefix glu-scan"
-  },
   "files": [
     "ait.js",
     "README.md",

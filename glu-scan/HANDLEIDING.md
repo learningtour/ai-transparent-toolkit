@@ -24,9 +24,6 @@ python3 glu_scan.py scan uploads/ # of meteen scannen
 Vereist Python 3.9 of nieuwer, verder niets: het programma gebruikt alleen de
 standaardbibliotheek.
 
-Dezelfde scanner bestaat ook in Node.js voor wie al met `ait` werkt:
-`cd glu-scan && npm link`, daarna `glu-scan ui`. Beide versies doen hetzelfde.
-
 ## Een lokaal model klaarzetten
 
 **LM Studio** (het makkelijkst): installeer LM Studio, download een instruct-model
@@ -190,9 +187,8 @@ Een scan is een hulpmiddel, geen garantie en geen juridisch advies.
 
 ```bash
 cd glu-scan
-python3 -m unittest -v      # de Python-versie (28 tests)
-npm test                    # de Node-versie (29 tests)
+python3 -m unittest -v
 ```
 
-Beide testsuites draaien de AI-kant tegen een nagebootste LM Studio-server, dus
-er hoeft geen model geïnstalleerd te zijn om de keten te controleren.
+28 tests. De AI-kant draait tegen een nagebootste LM Studio-server, dus er hoeft
+geen model geïnstalleerd te zijn om de hele keten te controleren.

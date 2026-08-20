@@ -2,35 +2,46 @@
 
 Controleer bestanden op persoonsgegevens *voordat* je ze in de **GLU
 Analysetool** zet. Alles gebeurt op je eigen computer: er gaat geen bestand
-naar internet, er is geen account nodig, en zonder internetverbinding werkt
-het net zo goed.
+naar internet, er is geen account nodig, en zonder internetverbinding werkt het
+net zo goed.
 
-Onderdeel van de [AI Transparent toolkit](../README.md).
+## Direct aan de slag
 
-## Beginnen
+**1. Download** →
+[**glu-scan downloaden (zip)**](https://github.com/learningtour/ai-transparent-toolkit/archive/refs/heads/main.zip)
 
-Download deze drie bestanden (knop **Code → Download ZIP** bovenaan de
-repository, of los via *Raw*):
+**2. Uitpakken** en de map `glu-scan` openen.
 
-- `glu_scan.py` — het programma zelf, één bestand
-- `Start GLU Scan.command` — startknop voor Mac
-- `Start GLU Scan.bat` — startknop voor Windows
+**3. Dubbelklik de startknop:**
 
-Zet ze in dezelfde map en dubbelklik de startknop voor jouw computer. Je
-browser opent een venster waar je bestanden in sleept. Klaar.
+| Jouw computer | Dubbelklik |
+|---|---|
+| Mac | `Start GLU Scan.command` |
+| Windows | `Start GLU Scan.bat` |
 
-Werkt het dubbelklikken niet, dan kan het ook vanaf de commandoregel:
+Je browser opent een venster. Sleep daar de bestanden in die je wilt uploaden,
+en je ziet meteen wat erin staat aan persoonsgegevens. Sluit het zwarte venster
+om te stoppen.
+
+> **Python nodig — één keer.** Mac en Windows leveren Python tegenwoordig niet
+> meer standaard mee. Ontbreekt het, dan zegt de startknop dat en verwijst hij
+> naar [python.org/downloads](https://www.python.org/downloads/): gratis, een
+> paar minuten. Zet op Windows bij het installeren het vinkje bij *Add
+> python.exe to PATH*. Verder is er niets te installeren — de scanner is één
+> bestand (`glu_scan.py`) dat alleen gebruikt wat in Python zelf zit.
+
+> **Mac waarschuwt de eerste keer.** Klik met rechts (of Ctrl+klik) op
+> `Start GLU Scan.command` → *Openen* → nogmaals *Openen*. Dat is eenmalig;
+> daarna volstaat dubbelklikken.
+
+Liever vanaf de commandoregel?
 
 ```bash
-python3 glu_scan.py            # het venster openen
+python3 glu_scan.py               # het venster openen
+python3 glu_scan.py scan uploads/ # of meteen een map scannen
 ```
 
-> **Python nodig.** Mac en Windows leveren Python tegenwoordig niet meer
-> standaard mee. Is het er nog niet, dan zegt de startknop dat en verwijst hij
-> naar [python.org/downloads](https://www.python.org/downloads/) — gratis, één
-> installatie van een paar minuten. Zet op Windows bij het installeren het
-> vinkje bij *Add python.exe to PATH*. Verder is er niets te installeren: het
-> programma gebruikt alleen wat in Python zelf zit.
+Onderdeel van de [AI Transparent toolkit](../README.md).
 
 ## Zonder AI werkt het al — mét AI ziet het meer
 
@@ -90,16 +101,7 @@ python3 -m unittest -v
 ```
 
 28 tests. De AI-kant draait tegen een nagebootste LM Studio-server, dus er
-hoeft geen model geïnstalleerd te zijn.
-
-## Twee versies, dezelfde scan
-
-| | |
-|---|---|
-| `glu_scan.py` | Eén Python-bestand. Dit is de versie om te downloaden en te gebruiken. |
-| `glu-scan.js` + `lib/` | Dezelfde scanner in Node.js, voor wie al met `ait` uit deze toolkit werkt. `cd glu-scan && npm link`, daarna `glu-scan ui`. |
-
-Ze doen hetzelfde en tonen hetzelfde venster.
+hoeft geen model geïnstalleerd te zijn om de hele keten te controleren.
 
 ## Privacy van de scanner zelf
 

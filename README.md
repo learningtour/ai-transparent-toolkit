@@ -105,10 +105,12 @@ Controleert bestanden op persoonsgegevens voordat ze geüpload worden, met een
 lokaal taalmodel in LM Studio of Ollama. Geen account, geen internetverbinding,
 geen bestand dat je computer verlaat.
 
-**Beginnen:** download `glu_scan.py` en de startknop voor jouw computer
-(`Start GLU Scan.command` op Mac, `Start GLU Scan.bat` op Windows), zet ze in
-dezelfde map en dubbelklik. Je browser opent een venster waar je bestanden in
-sleept. Verder is er niets te installeren; alleen Python 3 moet aanwezig zijn.
+**Beginnen:**
+[download de zip](https://github.com/learningtour/ai-transparent-toolkit/archive/refs/heads/main.zip),
+pak hem uit, open de map `glu-scan` en dubbelklik `Start GLU Scan.command`
+(Mac) of `Start GLU Scan.bat` (Windows). Je browser opent een venster waar je
+bestanden in sleept. Verder is er niets te installeren; alleen Python 3 moet op
+de computer staan.
 
 Of vanaf de commandoregel:
 
@@ -144,8 +146,7 @@ python3 glu_scan.py scan uploads/ --stil --json rapport.json || echo "eerst opsc
 
 Waarden staan gemaskeerd in het rapport (`11•••••33`), het venster luistert
 alleen op `127.0.0.1`, en een niet-lokale AI-server wordt geweigerd tenzij je
-daar expliciet om vraagt. Dezelfde scanner bestaat ook in Node.js voor wie al
-met `ait` werkt. Meer: [glu-scan/README.md](glu-scan/README.md) en de
+daar expliciet om vraagt. Meer: [glu-scan/README.md](glu-scan/README.md) en de
 [handleiding](glu-scan/HANDLEIDING.md).
 
 ## English
@@ -163,8 +164,8 @@ Analysetool: it scans files for personal data *before* they are uploaded, using
 deterministic checks (BSN eleven-proof, IBAN mod-97, Luhn) plus a local LLM
 served by LM Studio or Ollama. Nothing is sent anywhere — no account, no
 internet. Ships as a single Python file (`glu_scan.py`, standard library only)
-with double-click starters for macOS and Windows; a Node.js version of the same
-scanner is included for `ait` users. See [glu-scan/README.md](glu-scan/README.md).
+with double-click starters for macOS and Windows. See
+[glu-scan/README.md](glu-scan/README.md).
 
 ---
 
