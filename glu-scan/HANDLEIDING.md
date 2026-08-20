@@ -1,4 +1,7 @@
-# glu-scan — privacyscan vóór upload
+# glu-scan — handleiding
+
+Alle opties en achtergrond. Wil je alleen downloaden en beginnen, lees dan de
+[README](README.md).
 
 Satelliet van de **GLU Analysetool**. Controleert bestanden op persoonsgegevens
 vóórdat je ze uploadt. De hele scan draait op je eigen machine: patronen met
@@ -10,16 +13,23 @@ niet zomaar op een server terecht te komen — ook niet bij de controle daarop.
 
 ## Snel beginnen
 
+Kant-en-klaar programma voor Mac of Windows:
+[releasepagina](https://github.com/learningtour/ai-transparent-toolkit/releases)
+→ uitpakken → dubbelklik **Start GLU Scan**.
+
+Vanuit de broncode, met Node 20+:
+
 ```bash
 git clone https://github.com/learningtour/ai-transparent-toolkit.git
-cd ai-transparent-toolkit
-npm link                    # maakt `ait` én `glu-scan` beschikbaar
+cd ai-transparent-toolkit/glu-scan
+npm link                    # maakt het commando `glu-scan` beschikbaar
 
 glu-scan ui                 # web-app: sleep je bestanden erin
 glu-scan scan uploads/      # of vanaf de commandoregel
 ```
 
-Vereist Node 20+. Geen npm-dependencies.
+De scanner gebruikt geen npm-dependencies; alleen het bouwen van het
+zelfstandige programma doet dat.
 
 ## Een lokaal model klaarzetten
 
@@ -183,8 +193,35 @@ Een scan is een hulpmiddel, geen garantie en geen juridisch advies.
 ## Testen
 
 ```bash
+cd glu-scan
 npm test
 ```
 
 De testsuite draait de AI-kant tegen een nagebootste LM Studio-server, dus er
 hoeft geen model geïnstalleerd te zijn om de keten te controleren.
+
+## Zelf een zelfstandig programma bouwen
+
+```bash
+cd glu-scan
+npm install
+npm run build
+```
+
+Het resultaat komt in `glu-scan/dist/` en werkt zonder dat Node.js
+geïnstalleerd is. De bouwstap bundelt alle modules tot één bestand (esbuild),
+maakt daar een startblok van (Node's *single executable application*) en plakt
+dat in een kopie van Node zelf (postject). Op macOS wordt het resultaat opnieuw
+ondertekend, anders weigert het systeem het te starten.
+
+Bouwen kan alleen voor het besturingssysteem waar je op werkt. Alle platforms
+tegelijk gaat via GitHub: push een tag `glu-scan-v1.0.0` en
+`.github/workflows/glu-scan.yml` bouwt Mac (Apple Silicon en Intel), Windows en
+Linux, en hangt de zip-bestanden onder Releases.
+
+De programma's zijn **niet ondertekend** bij Apple of Microsoft. Gebruikers
+krijgen daarom eenmalig een waarschuwing (zie `build/starters/LEESMIJ.txt`).
+Wil je die waarschuwing weg, dan is een Apple Developer-account met
+notarisatie en een Windows-codesigningcertificaat nodig; die stap zit bewust
+niet in dit script, want daar horen sleutels bij die niet in een repository
+thuishoren.

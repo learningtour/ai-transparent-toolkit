@@ -1,11 +1,10 @@
 {
   "name": "ai-transparent-toolkit",
   "version": "1.0.0",
-  "description": "Lokaal grote (video)bestanden labelen conform Art. 50 EU AI Act; het ondertekende rapport komt in de online omgeving van AI Transparent (app.aitransparent.eu). Inclusief glu-scan: een satelliet die bestanden met lokale AI controleert op persoonsgegevens vóór upload. De content zelf verlaat je machine nooit.",
+  "description": "Lokaal grote (video)bestanden labelen conform Art. 50 EU AI Act; het ondertekende rapport komt in de online omgeving van AI Transparent (app.aitransparent.eu). De content zelf verlaat je machine nooit.",
   "type": "module",
   "bin": {
-    "ait": "./ait.js",
-    "glu-scan": "./glu-scan.js"
+    "ait": "./ait.js"
   },
   "engines": {
     "node": ">=20"
@@ -17,26 +16,19 @@
   },
   "homepage": "https://aitransparent.eu",
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "npm test --prefix glu-scan"
   },
   "files": [
     "ait.js",
-    "glu-scan.js",
-    "lib/",
-    "docs/",
     "README.md",
     "LICENSE"
   ],
   "keywords": [
     "ai-act",
     "transparantie",
-    "avg",
-    "gdpr",
-    "privacy",
-    "pii",
-    "lm-studio",
-    "ollama",
-    "lokale-ai",
-    "onderwijs"
+    "art-50",
+    "labeling",
+    "ffmpeg",
+    "video"
   ]
 }

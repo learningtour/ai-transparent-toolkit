@@ -20,6 +20,10 @@ import { toonResultaat, toonSamenvatting, naarJson, naarHtml } from './lib/rappo
 import { startServer } from './lib/server.js';
 import { ERNST_RANG } from './lib/patronen.js';
 
+// Wordt door de bouwstap op true gezet in het zelfstandige programma
+// (esbuild --define). In een gewone Node-installatie blijft het false.
+const VERPAKT = typeof GLU_VERPAKT !== 'undefined' && GLU_VERPAKT;
+
 const bold = s => `\x1b[1m${s}\x1b[0m`;
 const dim = s => `\x1b[2m${s}\x1b[0m`;
 const groen = s => `\x1b[32m${s}\x1b[0m`;
@@ -78,7 +82,7 @@ async function configMetVlaggen(v) {
 }
 
 // Zoekt een bruikbaar model als er geen is opgegeven.
-async function zorgVoorModel(cfg, { verplicht = true } = {}) {
+async function zorgVoorModel(cfg, { verplicht = true, viaApp = false } = {}) {
   try {
     const lijst = await modellen(cfg.endpoint);
     if (lijst.length === 0) throw new Error('de server draait maar heeft geen model geladen');
@@ -95,8 +99,10 @@ async function zorgVoorModel(cfg, { verplicht = true } = {}) {
       // "fetch failed" van undici zegt de gebruiker niets.
       const reden = /fetch failed|ECONNREFUSED/.test(err.message) ? 'geen verbinding' : err.message;
       console.error(geel('⚠ ') + reden);
-      console.error(dim(uitlegGeenServer(cfg.endpoint)));
-      console.error(geel('→ ') + 'De scan gaat verder met alleen de patrooncontrole.\n');
+      console.error(dim(uitlegGeenServer(cfg.endpoint, { viaApp })));
+      console.error(geel('→ ') + (viaApp
+        ? 'De app start gewoon; de AI-laag staat uit.\n'
+        : 'De scan gaat verder met alleen de patrooncontrole.\n'));
     }
     return false;
   }
@@ -178,7 +184,7 @@ async function cmdScan(args) {
 async function cmdUi(args) {
   const v = parseVlaggen(args);
   const cfg = await configMetVlaggen(v);
-  const zonderAi = !!v.zonderAi || !(await zorgVoorModel(cfg));
+  const zonderAi = !!v.zonderAi || !(await zorgVoorModel(cfg, { viaApp: true }));
   const poort = v.poort || 7817;
 
   let uit;
@@ -269,15 +275,22 @@ in LM Studio of Ollama voor namen, adressen en bijzondere persoonsgegevens
 
 ${dim('Uitgebreide opties: glu-scan scan --help')}`;
 
-const [cmd, ...rest] = process.argv.slice(2);
-try {
+// Geen top-level await: zo blijft dit bestand bundelbaar tot één zelfstandig
+// programma voor Mac en Windows (zie build/bouw.mjs).
+async function main() {
+  const [cmd, ...rest] = process.argv.slice(2);
   switch (cmd) {
-    case 'scan': case 'check': await cmdScan(rest); break;
-    case 'ui': case 'app': await cmdUi(rest); break;
-    case 'modellen': case 'models': await cmdModellen(rest); break;
-    case 'config': await cmdConfig(rest); break;
-    default: console.log(HELP); process.exit(cmd ? 1 : 0);
+    case 'scan': case 'check': return cmdScan(rest);
+    case 'ui': case 'app': return cmdUi(rest);
+    case 'modellen': case 'models': return cmdModellen(rest);
+    case 'config': return cmdConfig(rest);
+    default:
+      // Dubbelgeklikt programma zonder argumenten: meteen de web-app starten,
+      // want daar heeft iemand die geen terminal gebruikt iets aan.
+      if (!cmd && VERPAKT) return cmdUi([]);
+      console.log(HELP);
+      process.exit(cmd ? 1 : 0);
   }
-} catch (err) {
-  fail(err.stack?.split('\n').slice(0, 2).join('\n') || err.message);
 }
+
+main().catch(err => fail(err.stack?.split('\n').slice(0, 2).join('\n') || err.message));

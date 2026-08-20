@@ -3,11 +3,12 @@
 Twee commandoregelprogramma's die hetzelfde uitgangspunt delen: gevoelig
 materiaal blijft op je eigen machine.
 
-- **`ait`** — lokaal **grote video- en audiobestanden** labelen conform
-  Artikel 50 van de EU AI Act.
-- **`glu-scan`** — satelliet van de GLU Analysetool: bestanden met **lokale AI**
-  controleren op persoonsgegevens *vóór* je ze uploadt.
-  Zie [docs/glu-scan.md](docs/glu-scan.md).
+- **`ait`** (deze map) — lokaal **grote video- en audiobestanden** labelen
+  conform Artikel 50 van de EU AI Act. Voor wie met de terminal werkt.
+- **`glu-scan`** ([map `glu-scan/`](glu-scan/)) — satelliet van de GLU
+  Analysetool: bestanden met **lokale AI** controleren op persoonsgegevens
+  *vóór* je ze uploadt. Ook te downloaden als kant-en-klaar programma voor
+  Mac en Windows, zonder installatie.
 
 ## ait — labelen conform Art. 50
 
@@ -37,7 +38,7 @@ Vereist: [Node 20+](https://nodejs.org) en [ffmpeg](https://ffmpeg.org)
 ```bash
 git clone https://github.com/learningtour/ai-transparent-toolkit.git
 cd ai-transparent-toolkit
-npm link        # maakt `ait` en `glu-scan` overal beschikbaar
+npm link        # maakt het commando `ait` overal beschikbaar
 ```
 
 Of zonder git, als los bestand:
@@ -99,13 +100,22 @@ maand telt wel mee.
 
 ## glu-scan — privacyscan vóór upload
 
-Satelliet van de **GLU Analysetool**. Controleert bestanden op persoonsgegevens
-voordat ze geüpload worden, met een lokaal taalmodel in LM Studio of Ollama.
-Geen account nodig, geen internetverbinding, geen bestand dat je machine verlaat.
+Satelliet van de **GLU Analysetool** in de map [`glu-scan/`](glu-scan/).
+Controleert bestanden op persoonsgegevens voordat ze geüpload worden, met een
+lokaal taalmodel in LM Studio of Ollama. Geen account, geen internetverbinding,
+geen bestand dat je machine verlaat.
+
+**Downloaden en starten** (geen installatie, Node.js zit erin): pak op de
+[releasepagina](https://github.com/learningtour/ai-transparent-toolkit/releases)
+het bestand voor Mac of Windows, pak het uit en dubbelklik *Start GLU Scan*.
+Je browser opent een venster waar je bestanden in sleept.
+
+Of vanaf de commandoregel:
 
 ```bash
+cd glu-scan && npm link
 glu-scan ui                          # web-app: sleep je bestanden erin
-glu-scan scan uploads/               # of vanaf de commandoregel
+glu-scan scan uploads/               # of een hele map in één keer
 glu-scan scan dossier.docx --zonder-ai   # zonder model: alleen patronen
 ```
 
@@ -135,8 +145,8 @@ glu-scan scan uploads/ --stil --json rapport.json || echo "eerst opschonen"
 
 Waarden staan gemaskeerd in het rapport (`11•••••33`), de web-app luistert
 alleen op `127.0.0.1`, en een niet-lokaal AI-endpoint wordt geweigerd tenzij je
-daar expliciet om vraagt. Volledige documentatie:
-[docs/glu-scan.md](docs/glu-scan.md).
+daar expliciet om vraagt. Meer: [glu-scan/README.md](glu-scan/README.md) en de
+[handleiding](glu-scan/HANDLEIDING.md).
 
 ## English
 
@@ -148,10 +158,13 @@ embeds the label locally (stream copy). Requires an
 does not work without the service. `ait check` (detection) is public and
 needs no account.
 
-`glu-scan` is a satellite for the GLU Analysetool: it scans files for personal
-data *before* they are uploaded, using deterministic checks (BSN eleven-proof,
-IBAN mod-97, Luhn) plus a local LLM served by LM Studio or Ollama. Nothing is
-sent anywhere — no account, no internet. See [docs/glu-scan.md](docs/glu-scan.md).
+`glu-scan` (in [`glu-scan/`](glu-scan/)) is a satellite for the GLU
+Analysetool: it scans files for personal data *before* they are uploaded, using
+deterministic checks (BSN eleven-proof, IBAN mod-97, Luhn) plus a local LLM
+served by LM Studio or Ollama. Nothing is sent anywhere — no account, no
+internet. Ready-to-run builds for macOS and Windows are on the
+[releases page](https://github.com/learningtour/ai-transparent-toolkit/releases);
+no Node.js install required. See [glu-scan/README.md](glu-scan/README.md).
 
 ---
 

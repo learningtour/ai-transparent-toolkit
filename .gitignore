@@ -5,3 +5,7 @@ node_modules/
 
 *.geschoond.*
 glu-scan-rapport.*
+
+glu-scan/dist/
+glu-scan/pakket/
+*.zip

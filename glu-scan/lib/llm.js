@@ -35,7 +35,12 @@ export async function modellen(endpoint, { timeoutMs = 8000 } = {}) {
   return (data.data || data.models || []).map(m => m.id || m.name).filter(Boolean);
 }
 
-export function uitlegGeenServer(endpoint) {
+export function uitlegGeenServer(endpoint, { viaApp = false } = {}) {
+  const slot = viaApp
+    ? ['  Het venster werkt gewoon zonder model: je krijgt dan de',
+       '  patrooncontrole (BSN, IBAN, e-mail, telefoon, wachtwoorden…).']
+    : ['  Zonder model werkt de scan ook: `glu-scan scan <bestand> --zonder-ai`',
+       '  doet dan alleen de patrooncontrole (BSN, IBAN, e-mail, telefoon…).'];
   return [
     `Geen lokaal model bereikbaar op ${endpoint}.`,
     '',
@@ -44,8 +49,7 @@ export function uitlegGeenServer(endpoint) {
     '  Ollama    : `ollama serve` draait al; gebruik',
     '              --endpoint http://localhost:11434/v1 --model llama3.1',
     '',
-    '  Zonder model werkt de scan ook: `glu-scan scan <bestand> --zonder-ai`',
-    '  doet dan alleen de patrooncontrole (BSN, IBAN, e-mail, telefoon…).'
+    ...slot
   ].join('\n');
 }
 
