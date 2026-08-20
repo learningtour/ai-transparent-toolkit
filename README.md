@@ -5,10 +5,10 @@ materiaal blijft op je eigen machine.
 
 - **`ait`** (deze map) — lokaal **grote video- en audiobestanden** labelen
   conform Artikel 50 van de EU AI Act. Voor wie met de terminal werkt.
-- **`glu-scan`** ([map `glu-scan/`](glu-scan/)) — satelliet van de GLU
-  Analysetool: bestanden met **lokale AI** controleren op persoonsgegevens
-  *vóór* je ze uploadt. Eén Python-bestand dat je downloadt en start; werkt op
-  Mac en Windows.
+- **`privacy-scan`** ([map `privacy-scan/`](privacy-scan/)) — bestanden met
+  **lokale AI** controleren op persoonsgegevens *vóór* je ze uploadt naar een
+  AI-dienst of deelt met derden. Eén Python-bestand dat je downloadt en start;
+  werkt op Mac en Windows.
 
 ## ait — labelen conform Art. 50
 
@@ -98,26 +98,31 @@ zonder `--badge` is het pure stream copy zonder kwaliteitsverlies.
 Uploadlimieten van je abonnement gelden hier niet; het aantal labels per
 maand telt wel mee.
 
-## glu-scan — privacyscan vóór upload
+## privacy-scan — controleer bestanden vóór je ze deelt
 
-Satelliet van de **GLU Analysetool** in de map [`glu-scan/`](glu-scan/).
-Controleert bestanden op persoonsgegevens voordat ze geüpload worden, met een
-lokaal taalmodel in LM Studio of Ollama. Geen account, geen internetverbinding,
-geen bestand dat je computer verlaat.
+In de map [`privacy-scan/`](privacy-scan/). Controleert bestanden op
+persoonsgegevens voordat ze geüpload worden naar een AI-dienst, een analysetool
+of een andere partij, met een lokaal taalmodel in LM Studio of Ollama. Geen
+account, geen internetverbinding, geen bestand dat je computer verlaat.
+
+> **Experimentele tool.** Een scan mist persoonsgegevens en meldt soms iets wat
+> het niet is. Je blijft zelf verantwoordelijk voor wat je uploadt of deelt; de
+> uitkomst is geen juridisch advies. Zie de
+> [disclaimer](privacy-scan/README.md#disclaimer).
 
 **Beginnen:**
 [download de zip](https://github.com/learningtour/ai-transparent-toolkit/archive/refs/heads/main.zip),
-pak hem uit, open de map `glu-scan` en dubbelklik `Start GLU Scan.command`
-(Mac) of `Start GLU Scan.bat` (Windows). Je browser opent een venster waar je
+pak hem uit, open de map `privacy-scan` en dubbelklik `Start Privacyscan.command`
+(Mac) of `Start Privacyscan.bat` (Windows). Je browser opent een venster waar je
 bestanden in sleept. Verder is er niets te installeren; alleen Python 3 moet op
 de computer staan.
 
 Of vanaf de commandoregel:
 
 ```bash
-python3 glu_scan.py                                  # het venster openen
-python3 glu_scan.py scan uploads/                    # een hele map
-python3 glu_scan.py scan dossier.docx --zonder-ai    # zonder model: alleen patronen
+python3 privacy_scan.py                                  # het venster openen
+python3 privacy_scan.py scan uploads/                    # een hele map
+python3 privacy_scan.py scan dossier.docx --zonder-ai    # zonder model: alleen patronen
 ```
 
 Twee lagen die elkaar aanvullen:
@@ -141,13 +146,13 @@ De exitcode maakt er een poortwachter van: **0** = onder de drempel, **2** =
 persoonsgegevens gevonden (niet uploaden), **1** = fout.
 
 ```bash
-python3 glu_scan.py scan uploads/ --stil --json rapport.json || echo "eerst opschonen"
+python3 privacy_scan.py scan uploads/ --stil --json rapport.json || echo "eerst opschonen"
 ```
 
 Waarden staan gemaskeerd in het rapport (`11•••••33`), het venster luistert
 alleen op `127.0.0.1`, en een niet-lokale AI-server wordt geweigerd tenzij je
-daar expliciet om vraagt. Meer: [glu-scan/README.md](glu-scan/README.md) en de
-[handleiding](glu-scan/HANDLEIDING.md).
+daar expliciet om vraagt. Meer: [privacy-scan/README.md](privacy-scan/README.md) en de
+[handleiding](privacy-scan/HANDLEIDING.md).
 
 ## English
 
@@ -159,13 +164,18 @@ embeds the label locally (stream copy). Requires an
 does not work without the service. `ait check` (detection) is public and
 needs no account.
 
-`glu-scan` (in [`glu-scan/`](glu-scan/)) is a satellite for the GLU
-Analysetool: it scans files for personal data *before* they are uploaded, using
-deterministic checks (BSN eleven-proof, IBAN mod-97, Luhn) plus a local LLM
-served by LM Studio or Ollama. Nothing is sent anywhere — no account, no
-internet. Ships as a single Python file (`glu_scan.py`, standard library only)
-with double-click starters for macOS and Windows. See
-[glu-scan/README.md](glu-scan/README.md).
+`privacy-scan` (in [`privacy-scan/`](privacy-scan/)) scans files for personal
+data *before* they are uploaded to an AI service or shared with anyone else,
+using deterministic checks (BSN eleven-proof, IBAN mod-97, Luhn) plus a local
+LLM served by LM Studio or Ollama. Nothing is sent anywhere — no account, no
+internet. Ships as a single Python file (`privacy_scan.py`, standard library
+only) with double-click starters for macOS and Windows.
+
+**This tool is experimental.** A scan misses personal data and sometimes flags
+things that are not. You remain responsible for whatever you upload to an AI
+system or share with third parties; the output is not legal advice and does not
+establish compliance with the GDPR or any other law. Provided without any
+warranty. See [privacy-scan/README.md](privacy-scan/README.md).
 
 ---
 

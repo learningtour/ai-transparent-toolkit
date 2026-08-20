@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests voor glu_scan.py. Draaien met:  python3 -m unittest -v
+"""Tests voor privacy_scan.py. Draaien met:  python3 -m unittest -v
 
 De AI-kant wordt getest tegen een nagebootste LM Studio-server, zodat de hele
 keten (endpoint → JSON → filtering → oordeel) getest is zonder dat er een model
@@ -16,7 +16,7 @@ import zipfile
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
-import glu_scan as g
+import privacy_scan as g
 
 
 def schrijf(map_, naam, inhoud):
@@ -140,7 +140,7 @@ class TestPatronen(unittest.TestCase):
 
 class TestExtractie(unittest.TestCase):
     def setUp(self):
-        self.map = tempfile.mkdtemp(prefix="glu-scan-test-")
+        self.map = tempfile.mkdtemp(prefix="privacy-scan-test-")
 
     def test_platte_tekst(self):
         pad = schrijf(self.map, "notitie.md", "# Titel\nBSN 111222333\n")
@@ -211,7 +211,7 @@ class TestLokaleAi(unittest.TestCase):
 
 class TestScan(unittest.TestCase):
     def setUp(self):
-        self.map = tempfile.mkdtemp(prefix="glu-scan-test-")
+        self.map = tempfile.mkdtemp(prefix="privacy-scan-test-")
 
     def test_patronen_en_ai_samen(self):
         antwoord = json.dumps({
@@ -290,7 +290,7 @@ class TestScan(unittest.TestCase):
 
 class TestRapport(unittest.TestCase):
     def setUp(self):
-        self.map = tempfile.mkdtemp(prefix="glu-scan-test-")
+        self.map = tempfile.mkdtemp(prefix="privacy-scan-test-")
 
     def test_rapporten_maskeren(self):
         pad = schrijf(self.map, "rapportje.txt", "BSN 111222333")
@@ -323,7 +323,7 @@ class TestWebApp(unittest.TestCase):
                 resultaat = json.loads(antwoord.read().decode())
             self.assertEqual(resultaat["naam"], "leerlingen.csv")
             self.assertEqual(resultaat["oordeel"], "hoog")
-            self.assertNotIn(tempfile.gettempdir() + os.sep + "glu-scan-", json.dumps(resultaat))
+            self.assertNotIn(tempfile.gettempdir() + os.sep + "privacy-scan-", json.dumps(resultaat))
 
             verzoek = urllib.request.Request(
                 url + "/api/samenvatting", data=json.dumps({"resultaten": [resultaat]}).encode(),

@@ -1,19 +1,32 @@
 #!/usr/bin/env python3
-"""glu-scan — privacyscan vóór upload naar de GLU Analysetool.
+"""privacy-scan — controleer bestanden op persoonsgegevens vóór je ze deelt.
 
-Controleert bestanden op persoonsgegevens vóórdat je ze uploadt. Alles draait
-op deze computer: patronen met echte validatie (elfproef, mod-97, Luhn) plus
-een lokaal taalmodel in LM Studio of Ollama. Er gaat niets naar internet.
+Bedoeld voor het moment vlak vóór je een bestand uploadt naar een AI-dienst,
+een analysetool of een andere partij. De scan draait volledig op deze computer:
+patronen met echte validatie (elfproef, mod-97, Luhn) plus een lokaal taalmodel
+in LM Studio of Ollama. Er gaat niets naar internet.
 
 Eén bestand, alleen de standaardbibliotheek van Python. Niets installeren.
 
-    python3 glu_scan.py                    het venster openen (sleep bestanden erin)
-    python3 glu_scan.py scan uploads/      vanaf de commandoregel
-    python3 glu_scan.py scan map --zonder-ai --html rapport.html
+    python3 privacy_scan.py                    het venster openen (sleep bestanden erin)
+    python3 privacy_scan.py scan uploads/      vanaf de commandoregel
+    python3 privacy_scan.py scan map --zonder-ai --html rapport.html
 
 Vereist Python 3.9 of nieuwer.
 
-© LearningTour · MIT-licentie · Een scan is een hulpmiddel, geen garantie.
+LET OP — deze tool is experimenteel. Een scan mist persoonsgegevens en meldt
+soms iets wat het niet is. Jij blijft zelf verantwoordelijk voor wat je uploadt
+naar een AI-systeem of deelt met derden. De uitkomst is geen juridisch advies
+en toont geen naleving aan van de AVG, de GDPR of enige andere wet. Geleverd
+zonder enige garantie (MIT).
+
+NOTE — this tool is experimental. A scan misses personal data and sometimes
+flags things that are not. You remain responsible for whatever you upload to an
+AI system or share with third parties. Its output is not legal advice and does
+not establish compliance with the GDPR or any other law. Provided without any
+warranty (MIT).
+
+© LearningTour · MIT-licentie
 """
 
 import argparse
@@ -30,6 +43,24 @@ import zlib
 from pathlib import Path
 
 VERSIE = "1.0.0"
+
+# Op elke plek waar iemand een uitslag ziet, hoort te staan wat die uitslag
+# niet is. Eén bron, zodat de tekst niet uit elkaar loopt.
+DISCLAIMER_KORT_NL = ("Experimentele tool. Een scan is een hulpmiddel, geen garantie: "
+                      "je blijft zelf verantwoordelijk voor wat je uploadt of deelt.")
+DISCLAIMER_KORT_EN = ("Experimental tool. A scan is an aid, not a guarantee: you remain "
+                      "responsible for whatever you upload or share.")
+DISCLAIMER_LANG_NL = (
+    "Deze tool is experimenteel. Een scan mist persoonsgegevens en meldt soms iets wat het niet is. "
+    "Jij blijft zelf verantwoordelijk voor wat je uploadt naar een AI-systeem of deelt met derden. "
+    "De uitkomst is geen juridisch advies en toont geen naleving aan van de AVG, de GDPR of enige "
+    "andere wet. Geleverd zonder enige garantie (MIT-licentie).")
+DISCLAIMER_LANG_EN = (
+    "This tool is experimental. A scan misses personal data and sometimes flags things that are not. "
+    "You remain responsible for whatever you upload to an AI system or share with third parties. "
+    "Its output is not legal advice and does not establish compliance with the GDPR or any other law. "
+    "Provided without any warranty (MIT licence).")
+
 STANDAARD_ENDPOINT = "http://localhost:1234/v1"   # LM Studio
 STANDAARD_POORT = 7817
 
@@ -691,7 +722,7 @@ import urllib.request
 
 LOKALE_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1", "host.docker.internal"}
 
-SYSTEEM_PROMPT = """Je bent een privacy-analist die documenten controleert vóór ze geüpload worden naar een analysetool.
+SYSTEEM_PROMPT = """Je bent een privacy-analist die documenten controleert vóór ze geüpload of gedeeld worden.
 Je zoekt persoonsgegevens volgens de AVG (GDPR) in Nederlandse en Engelse tekst.
 
 Meld:
@@ -975,7 +1006,7 @@ def samenvatten(resultaten, drempel="middel"):
                    if r["oordeel"] != "onbekend" and ERNST_RANG[r["oordeel"]] >= ERNST_RANG[drempel]]
     onleesbaar = [r["naam"] for r in resultaten if r["oordeel"] == "onbekend"]
 
-    advies = ("Alle bestanden blijven onder de drempel — uploaden naar de GLU Analysetool kan."
+    advies = ("Alle bestanden blijven onder de drempel — uploaden kan."
               if not geblokkeerd else
               f'{len(geblokkeerd)} van {len(resultaten)} bestand(en) haalt de drempel "{drempel}" '
               f"of hoger. Schoon die eerst op.")
@@ -1014,7 +1045,7 @@ def redigeer(pad, resultaat, achtervoegsel=".geschoond"):
 PAGINA = """<!doctype html>
 <html lang="nl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Privacyscan vóór upload — GLU Analysetool</title>
+<title>Privacyscan vóór upload</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%F0%9F%9B%A1%3C/text%3E%3C/svg%3E">
 <style>
   :root { color-scheme: light dark; --bg:#fff; --vlak:#f5f6fb; --rand:#dadfeb; --tekst:#131735; --dim:#5c6480; --accent:#2a4bd7; }
@@ -1031,6 +1062,7 @@ PAGINA = """<!doctype html>
   #zone.over { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, var(--vlak)); }
   #zone strong { display:block; font-size:1.05rem; margin-bottom:.35rem; }
   #zone span { color:var(--dim); font-size:.9rem; }
+  .let-op { background:var(--vlak); border:1px solid var(--rand); border-left:4px solid #c98a00; border-radius:8px; padding:.6rem .9rem; margin:0 0 1.25rem; font-size:.9rem; }
   .opties { display:flex; flex-wrap:wrap; gap:1rem; margin:1rem 0 1.5rem; font-size:.9rem; color:var(--dim); }
   .kaart { border:1px solid var(--rand); border-left-width:5px; border-radius:12px; background:var(--vlak); padding:1rem 1.15rem; margin-bottom:.9rem; }
   .kaart.hoog { border-left-color:#c62828; } .kaart.middel { border-left-color:#c98a00; }
@@ -1057,7 +1089,10 @@ PAGINA = """<!doctype html>
 </style></head>
 <body><main>
   <h1>Privacyscan vóór upload</h1>
-  <p class="sub">Controleer bestanden op persoonsgegevens vóór je ze in de GLU Analysetool zet. Alles gebeurt op deze computer; er gaat niets naar internet.</p>
+  <p class="sub">Controleer bestanden op persoonsgegevens vóór je ze uploadt of deelt. Alles gebeurt op deze computer; er gaat niets naar internet.</p>
+
+  <p class="let-op"><strong>Experimentele tool.</strong> Een scan mist persoonsgegevens en meldt soms iets wat het niet is.
+  Je blijft zelf verantwoordelijk voor wat je uploadt naar een AI-systeem of deelt met derden.</p>
 
   <div class="status" id="status"><span class="spin"></span> lokaal model zoeken…</div>
 
@@ -1076,8 +1111,12 @@ PAGINA = """<!doctype html>
   <div id="totaal"></div>
   <div id="uitslag"></div>
 
-  <footer>glu-scan · satelliet van de GLU Analysetool · onderdeel van de AI Transparent toolkit.
-  Een scan is een hulpmiddel en geen garantie: controleer altijd zelf wat je uploadt.</footer>
+  <footer>privacy-scan · onderdeel van de AI Transparent toolkit.
+  <br>De uitkomst is geen juridisch advies en toont geen naleving aan van de AVG, de GDPR of enige andere wet.
+  Geleverd zonder enige garantie (MIT-licentie).
+  <br><span lang="en">This tool is experimental. A scan misses personal data and sometimes flags things that are not.
+  You remain responsible for whatever you upload to an AI system or share with third parties. Its output is not legal
+  advice and does not establish compliance with the GDPR or any other law. Provided without any warranty (MIT licence).</span></footer>
 </main>
 <script>
 const zone = document.getElementById('zone');
@@ -1207,7 +1246,7 @@ MAX_UPLOAD = 200 * 1024 * 1024
 
 def maak_handler(instellingen, zonder_ai):
     class Handler(http.server.BaseHTTPRequestHandler):
-        server_version = "glu-scan/" + VERSIE
+        server_version = "privacy-scan/" + VERSIE
         protocol_version = "HTTP/1.1"
 
         def log_message(self, *_):
@@ -1277,7 +1316,7 @@ def maak_handler(instellingen, zonder_ai):
                 nu_zonder_ai = zonder_ai or self.headers.get("X-Zonder-Ai") == "1"
 
                 achtervoegsel = Path(naam).suffix or ".bin"
-                greep, tijdelijk = tempfile.mkstemp(prefix="glu-scan-", suffix=achtervoegsel)
+                greep, tijdelijk = tempfile.mkstemp(prefix="privacy-scan-", suffix=achtervoegsel)
                 try:
                     with os.fdopen(greep, "wb") as bestand:
                         bestand.write(data)
@@ -1393,11 +1432,13 @@ def toon_samenvatting(s):
     print(f"  {KLEUR_VAN[s['hoogste_oordeel']](TEKEN_VAN[s['hoogste_oordeel']])} {s['upload_advies']}")
     if s["geblokkeerd"]:
         print(f"  {grijs('opschonen:')} {', '.join(s['geblokkeerd'])}")
+    print(f"  {grijs(DISCLAIMER_KORT_NL)}")
 
 
 def naar_json(resultaten, samenvatting, toon_waarden=False):
     return {
-        "tool": "glu-scan", "versie": 1,
+        "tool": "privacy-scan", "versie": 1,
+        "disclaimer": {"nl": DISCLAIMER_LANG_NL, "en": DISCLAIMER_LANG_EN},
         "tijdstip": __import__("datetime").datetime.now().astimezone().isoformat(timespec="seconds"),
         "samenvatting": samenvatting,
         "bestanden": [{
@@ -1451,7 +1492,7 @@ def naar_html(resultaten, s, toon_waarden=False):
     tijd = __import__("datetime").datetime.now().strftime("%d-%m-%Y %H:%M")
     return f"""<!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Privacyscan — GLU Analysetool</title>
+<title>Privacyscan — rapport</title>
 <style>
   :root {{ color-scheme: light dark; --rand:#d8dce5; --dim:#5b6478; --bg:#fff; --vlak:#f6f7fb; --tekst:#12162a; }}
   @media (prefers-color-scheme: dark) {{ :root {{ --rand:#2b3145; --dim:#98a0b8; --bg:#0e1120; --vlak:#161a2c; --tekst:#e8eaf4; }} }}
@@ -1465,6 +1506,7 @@ def naar_html(resultaten, s, toon_waarden=False):
   .badge {{ font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; padding:.15rem .5rem; border-radius:999px; border:1px solid currentColor; white-space:nowrap; }}
   .badge.hoog {{ color:#c62828; }} .badge.middel {{ color:#b26a00; }}
   .badge.laag {{ color:#0b6ea8; }} .badge.geen {{ color:#1b7c3d; }} .badge.onbekend {{ color:var(--dim); }}
+  .let-op {{ background:var(--vlak); border:1px solid var(--rand); border-left:4px solid #c98a00; border-radius:8px; padding:.6rem .9rem; margin:0 0 1.25rem; font-size:.9rem; }}
   .advies {{ margin:.5rem 0; }} .ai {{ color:var(--dim); font-style:italic; margin:.25rem 0 .75rem; }}
   table {{ width:100%; border-collapse:collapse; margin-top:.5rem; display:block; overflow-x:auto; }}
   th,td {{ text-align:left; padding:.4rem .6rem; border-bottom:1px solid var(--rand); vertical-align:top; font-size:.9rem; }}
@@ -1475,13 +1517,14 @@ def naar_html(resultaten, s, toon_waarden=False):
 </style></head>
 <body><main>
   <h1>Privacyscan vóór upload</h1>
-  <p class="meta">GLU Analysetool · {tijd} · lokaal uitgevoerd, geen bestand heeft deze computer verlaten</p>
+  <p class="meta">{tijd} · lokaal uitgevoerd, geen bestand heeft deze computer verlaten</p>
+  <p class="let-op"><strong>Experimentele tool.</strong> {_html.escape(DISCLAIMER_LANG_NL)}</p>
   <div class="totaal"><strong>{s['bestanden']} bestand(en)</strong> — {s['telling']['hoog']}× hoog,
     {s['telling']['middel']}× middel, {s['telling']['laag']}× laag, {s['telling']['geen']}× schoon.
     <p style="margin:.5rem 0 0">{_html.escape(s['upload_advies'])}</p></div>
   {"".join(kaart(r) for r in resultaten)}
-  <footer>Gemaakt met glu-scan {VERSIE}. Waarden zijn {'volledig weergegeven — behandel dit rapport als vertrouwelijk' if toon_waarden else 'gemaskeerd weergegeven'}.
-  Een scan is een hulpmiddel, geen garantie en geen juridisch advies.</footer>
+  <footer>Gemaakt met privacy-scan {VERSIE}. Waarden zijn {'volledig weergegeven — behandel dit rapport als vertrouwelijk' if toon_waarden else 'gemaskeerd weergegeven'}.
+  <br><span lang="en">{_html.escape(DISCLAIMER_LANG_EN)}</span></footer>
 </main></body></html>"""
 
 
@@ -1489,7 +1532,7 @@ def naar_html(resultaten, s, toon_waarden=False):
 # Instellingen
 # ---------------------------------------------------------------------------
 
-CONFIG_BESTAND = Path.home() / ".config" / "ai-transparent" / "glu-scan.json"
+CONFIG_BESTAND = Path.home() / ".config" / "ai-transparent" / "privacy-scan.json"
 STANDAARD = {
     "endpoint": STANDAARD_ENDPOINT,
     "model": None,
@@ -1651,7 +1694,7 @@ def cmd_modellen(argumenten):
         print(f"  {groen('●') if model == instellingen.get('model') else grijs('○')} {model}")
     if not instellingen.get("model") and lijst:
         print(grijs(f"\n  Geen voorkeursmodel ingesteld; de eerste uit deze lijst wordt gebruikt."
-                    f"\n  Vastleggen: glu_scan.py config --model {lijst[0]}"))
+                    f"\n  Vastleggen: privacy_scan.py config --model {lijst[0]}"))
     return 0
 
 
@@ -1666,7 +1709,7 @@ def cmd_config(argumenten):
             waarde = instellingen.get(sleutel)
             achtervoegsel = grijs(" (standaard)") if waarde == standaard else ""
             print(f"  {sleutel:<14} {waarde if waarde is not None else grijs('(niet ingesteld)')}{achtervoegsel}")
-        print(grijs("\n  Wijzigen: glu_scan.py config --endpoint http://localhost:11434/v1 --model llama3.1"))
+        print(grijs("\n  Wijzigen: privacy_scan.py config --endpoint http://localhost:11434/v1 --model llama3.1"))
         return 0
     instellingen.update(wijzigingen)
     if instellingen["drempel"] not in ("laag", "middel", "hoog"):
@@ -1680,11 +1723,12 @@ def cmd_config(argumenten):
 
 def bouw_parser():
     parser = argparse.ArgumentParser(
-        prog="glu_scan.py",
-        description="Privacyscan vóór upload naar de GLU Analysetool. Alles draait op deze computer.",
-        epilog="Zonder argumenten opent het venster waar je bestanden in kunt slepen.",
+        prog="privacy_scan.py",
+        description="Controleer bestanden op persoonsgegevens vóór je ze uploadt of deelt. Alles draait op deze computer.",
+        epilog="Zonder argumenten opent het venster waar je bestanden in kunt slepen.\n\n"
+               + DISCLAIMER_KORT_NL + "\n" + DISCLAIMER_KORT_EN,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--versie", action="version", version=f"glu-scan {VERSIE}")
+    parser.add_argument("--versie", action="version", version=f"privacy-scan {VERSIE}")
     sub = parser.add_subparsers(dest="commando")
 
     def gedeeld(p):

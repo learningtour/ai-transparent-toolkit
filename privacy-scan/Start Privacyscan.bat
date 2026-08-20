@@ -15,11 +15,11 @@ pause
 exit /b 1
 
 :startmetpy
-py -3 glu_scan.py ui
+py -3 privacy_scan.py ui
 goto :einde
 
 :startmetpython
-python glu_scan.py ui
+python privacy_scan.py ui
 
 :einde
 if errorlevel 1 pause

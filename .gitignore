@@ -4,7 +4,7 @@ node_modules/
 .DS_Store
 
 *.geschoond.*
-glu-scan-rapport.*
+privacy-scan-rapport.*
 
 __pycache__/
 *.pyc

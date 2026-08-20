@@ -1,24 +1,28 @@
-# glu-scan — handleiding
+# privacy-scan — handleiding
 
 Alle opties en achtergrond. Wil je alleen downloaden en beginnen, lees dan de
 [README](README.md).
 
-Satelliet van de **GLU Analysetool**. Controleert bestanden op persoonsgegevens
-vóórdat je ze uploadt. De hele scan draait op je eigen machine: patronen met
-echte validatie plus een lokaal taalmodel in **LM Studio**, **Ollama** of
-llama.cpp. Er gaat geen byte naar een clouddienst.
+Controleert bestanden op persoonsgegevens vóórdat je ze uploadt naar een
+AI-dienst, een analysetool of een andere partij. De hele scan draait op je eigen
+machine: patronen met echte validatie plus een lokaal taalmodel in **LM
+Studio**, **Ollama** of llama.cpp. Er gaat geen byte naar een clouddienst.
 
 De redenering erachter is dezelfde als bij `ait label`: wat gevoelig is, hoort
 niet zomaar op een server terecht te komen — ook niet bij de controle daarop.
 
+> **Experimentele tool.** Een scan mist persoonsgegevens en meldt soms iets wat
+> het niet is. Je blijft zelf verantwoordelijk voor wat je uploadt of deelt.
+> Zie [Grenzen en disclaimer](#grenzen-en-disclaimer).
+
 ## Snel beginnen
 
-Download `glu_scan.py` plus de startknop voor jouw computer, zet ze in dezelfde
+Download `privacy_scan.py` plus de startknop voor jouw computer, zet ze in dezelfde
 map en dubbelklik de startknop. Of vanaf de commandoregel:
 
 ```bash
-python3 glu_scan.py               # het venster openen
-python3 glu_scan.py scan uploads/ # of meteen scannen
+python3 privacy_scan.py               # het venster openen
+python3 privacy_scan.py scan uploads/ # of meteen scannen
 ```
 
 Vereist Python 3.9 of nieuwer, verder niets: het programma gebruikt alleen de
@@ -29,25 +33,25 @@ standaardbibliotheek.
 **LM Studio** (het makkelijkst): installeer LM Studio, download een instruct-model
 (bijvoorbeeld `qwen2.5-7b-instruct` of `llama-3.1-8b-instruct`), open het tabblad
 **Developer** en zet de server op **Running**. Standaard luistert die op
-`http://localhost:1234/v1` — precies wat `glu-scan` verwacht.
+`http://localhost:1234/v1` — precies wat `privacy-scan` verwacht.
 
 **Ollama**:
 
 ```bash
 ollama pull llama3.1
-python3 glu_scan.py config --endpoint http://localhost:11434/v1 --model llama3.1
+python3 privacy_scan.py config --endpoint http://localhost:11434/v1 --model llama3.1
 ```
 
 Controleren of het werkt:
 
 ```bash
-python3 glu_scan.py modellen
+python3 privacy_scan.py modellen
 ```
 
 Geen model? Dan werkt de patrooncontrole gewoon door:
 
 ```bash
-python3 glu_scan.py scan dossier.docx --zonder-ai
+python3 privacy_scan.py scan dossier.docx --zonder-ai
 ```
 
 ## De twee lagen van de scan
@@ -117,7 +121,7 @@ uploadknop: **0** = onder de drempel, **2** = boven de drempel (niet uploaden),
 **1** = fout. De drempel staat standaard op `middel`:
 
 ```bash
-python3 glu_scan.py scan uploads/ --stil --json rapport.json || {
+python3 privacy_scan.py scan uploads/ --stil --json rapport.json || {
   echo "Er staan persoonsgegevens in — upload geblokkeerd."
   exit 1
 }
@@ -126,7 +130,7 @@ python3 glu_scan.py scan uploads/ --stil --json rapport.json || {
 ## Opties
 
 ```
-python3 glu_scan.py scan <bestand of map…>
+python3 privacy_scan.py scan <bestand of map…>
   --zonder-ai            alleen patrooncontrole
   --visie                afbeeldingen laten lezen door een visiemodel
   --redigeer             geschoonde kopie schrijven (alleen platte tekst)
@@ -139,17 +143,17 @@ python3 glu_scan.py scan <bestand of map…>
   --max-stukken <n>      hoeveel tekstblokken maximaal naar de AI gaan
   --stil                 geen uitvoer, alleen exitcode en rapporten
 
-python3 glu_scan.py ui        het venster openen
-python3 glu_scan.py modellen  welke modellen draaien er lokaal?
-python3 glu_scan.py config    instellingen tonen of wijzigen
+python3 privacy_scan.py ui        het venster openen
+python3 privacy_scan.py modellen  welke modellen draaien er lokaal?
+python3 privacy_scan.py config    instellingen tonen of wijzigen
 ```
 
-Instellingen staan in `~/.config/ai-transparent/glu-scan.json` (alleen leesbaar voor jou).
+Instellingen staan in `~/.config/ai-transparent/privacy-scan.json` (alleen leesbaar voor jou).
 
 ## Redigeren
 
 ```bash
-python3 glu_scan.py scan notulen.txt --redigeer
+python3 privacy_scan.py scan notulen.txt --redigeer
 # → notulen.geschoond.txt
 ```
 
@@ -170,9 +174,22 @@ resultaat altijd zelf.
 - Een niet-lokaal AI-endpoint wordt geweigerd; wie dat toch wil, moet
   `--sta-extern` opgeven en krijgt een waarschuwing.
 
-## Grenzen
+## Grenzen en disclaimer
 
-Een scan is een hulpmiddel, geen garantie en geen juridisch advies.
+**Deze tool is experimenteel.** Een scan is een hulpmiddel, geen garantie en
+geen juridisch advies. Je blijft zelf verantwoordelijk voor wat je uploadt naar
+een AI-systeem of deelt met derden; een groene uitslag is geen toestemming en
+geen vrijwaring. De uitkomst toont geen naleving aan van de AVG, de GDPR, de EU
+AI Act of enige andere wet. Geleverd zonder enige garantie onder de
+[MIT-licentie](../LICENSE).
+
+*This tool is experimental. A scan is an aid, not a guarantee, and not legal
+advice. You remain responsible for whatever you upload to an AI system or share
+with third parties; a clean result is neither permission nor indemnity. The
+output does not establish compliance with the GDPR, the EU AI Act, or any other
+law. Provided without any warranty under the MIT licence.*
+
+Concreet loop je tegen deze grenzen aan:
 
 - Namen zonder context worden door patronen gemist; daar is het model voor —
   en ook dat mist er soms een. Blijf zelf kijken.
@@ -186,7 +203,7 @@ Een scan is een hulpmiddel, geen garantie en geen juridisch advies.
 ## Testen
 
 ```bash
-cd glu-scan
+cd privacy-scan
 python3 -m unittest -v
 ```
 
