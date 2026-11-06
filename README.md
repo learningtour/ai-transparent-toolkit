@@ -48,6 +48,10 @@ curl -fsSL https://raw.githubusercontent.com/learningtour/ai-transparent-toolkit
 chmod +x /usr/local/bin/ait
 ```
 
+Bij deze losse installatie ontbreekt de map `fonts/`. `ait logo` gebruikt dan
+een systeemlettertype (Arial op macOS, DejaVu Sans op Linux). Wil je het
+lettertype van de huisstijl, installeer dan met git.
+
 ## Inloggen
 
 Haal je API-sleutel op in het portaal
@@ -67,6 +71,7 @@ De sleutel wordt opgeslagen in `~/.config/ai-transparent/config.json`
 ait label productie.mp4 --systeem "Sora"     # AI-gegenereerd
 ait label interview.mp4 --bewerkt            # met AI bewerkt
 ait label promo.mp4 --deepfake --badge       # + zichtbare disclosure (eerste 6 s)
+ait logo productie.mp4 --systeem "Sora"      # zichtbaar AI-logo + label (zie hieronder)
 ait check productie.ailabel.mp4              # controleren tegen het register
 ait whoami                                   # account + verbruik
 ```
@@ -80,8 +85,112 @@ Per bestand krijg je:
 - een registervermelding in je online omgeving (portaal → verbruik).
 
 `--badge` brandt de zichtbare disclosure in de eerste 6 seconden van het
-beeld (Art. 50(5): melden bij eerste blootstelling). Dat hercodeert de video;
-zonder `--badge` is het pure stream copy zonder kwaliteitsverlies.
+beeld, linksonder (Art. 50(5): melden bij eerste blootstelling). Het is
+dezelfde badge als bij `ait logo`. Dat hercodeert de video; zonder `--badge`
+is het pure stream copy zonder kwaliteitsverlies.
+
+## Zichtbaar AI-logo: `ait logo`
+
+`ait logo` brandt het AI Transparent-logo met een korte tekst in een hoek van
+de video. Daarna labelt het de video, net als `ait label`: het label staat
+ondertekend in het register, en het label-ID en de verify-URL staan in de
+metadata van de video.
+
+```bash
+ait logo clip.mp4                                  # rechtsboven, de hele video
+ait logo clip.mp4 --positie lo --seconden 6        # linksonder, alleen de eerste 6 s
+ait logo clip.mp4 --tekst "Gemaakt met AI"         # eigen tekst
+ait logo clip.mp4 --geen-tekst                     # alleen het logo
+ait logo clip.mp4 --met-id                         # + regel met de verify-URL
+ait logo clip.mp4 --bewerkt --systeem "Runway"     # met AI bewerkt, systeem in het label
+ait logo clip.mp4 --voorbeeld                      # alleen een PNG van één frame, geen label
+```
+
+![De badge op een 1080p-video: alleen het logo (`--geen-tekst`), de standaard, en met `--met-id`](docs/logo-voorbeeld.png)
+
+### Zo label je een video met logo
+
+1. Log eenmalig in met `ait login`.
+2. Maak een voorbeeld: `ait logo clip.mp4 --voorbeeld`.
+3. Open `clip.logo-voorbeeld.png` en controleer de positie en de grootte.
+4. Pas zo nodig `--positie` of `--grootte` aan en herhaal stap 2.
+5. Label de video: `ait logo clip.mp4` met dezelfde opties, zonder `--voorbeeld`.
+6. Controleer het resultaat: `ait check clip.ailabel.mp4`.
+
+Een voorbeeld maakt geen label en telt niet mee in je verbruik.
+
+### Opties
+
+| Optie | Betekenis | Standaard |
+| --- | --- | --- |
+| `--positie` | `linksboven` (`lb`), `rechtsboven` (`rb`), `linksonder` (`lo`) of `rechtsonder` (`ro`). Engels mag ook: `top-left` enz. | `rechtsboven` |
+| `--seconden <n>` | Toon het logo alleen in de eerste *n* seconden. | de hele video |
+| `--tekst "<tekst>"` | Eigen tekst naast het logo, bijv. `"Gemaakt met AI"`. | de korte tekst van het label |
+| `--geen-tekst` | Alleen het logo, zonder tekst. | — |
+| `--met-id` | Tweede, kleine regel met de verify-URL (`app.aitransparent.eu/verify/AIL-…`). | — |
+| `--grootte <factor>` | Schaal van de badge, van 0.3 tot 4. | `1` |
+| `--crf <n>` | Kwaliteit van de hercodering; lager is beter en groter. | `18` (H.264), `31` (VP9) |
+| `--font <pad.ttf>` | Ander TrueType-lettertype (`.ttf` of `.ttc`). | DejaVu Sans |
+| `--voorbeeld` | Alleen een PNG van één frame; geen label, geen hercodering. | — |
+| `--bewerkt`, `--deepfake`, `--lang`, `--systeem`, `--model`, `--output` | Zoals bij `ait label`. | — |
+
+De korte tekst is dezelfde als op de zichtbare badge voor afbeeldingen in
+AI Transparent: *AI-gegenereerd*, *AI-bewerkt* of *Deep fake · …*, en met
+`--lang en` *AI-generated* of *AI-manipulated*.
+
+### Ontwerp en maat
+
+- **Logo**: het AI Transparent-logo uit de app (blauw `#003399`, witte bogen
+  en stip), met dezelfde hoekafronding.
+- **Tekst**: wit, in DejaVu Sans, het lettertype van de badge voor afbeeldingen.
+  De balk achter de tekst is `#003399` met 92% dekking. Een lichte rand houdt
+  de badge zichtbaar op donker beeld.
+- **Maat**: de hoogte van de badge is 1/16 van de korte zijde van het beeld,
+  minimaal 20 px. Bij 1080p is dat 68 px, bij 4K 135 px, bij 720p 45 px.
+  Een verticale video (1080×1920) krijgt dus dezelfde maat als 1080p.
+- **Marge**: minimaal 3% van de korte zijde. Is de tekst te breed voor het
+  beeld, dan wordt de badge kleiner.
+- **Rechtsboven** is de standaard: daar staat bij omroepen het zenderlogo, en
+  het blijft vrij van ondertitels en de knoppen van spelers onderin.
+
+`ait logo` houdt rekening met telefoonvideo's met een rotatie en met
+niet-vierkante pixels (bijv. PAL 16:9). Het logo staat dan in de juiste hoek
+en blijft vierkant in beeld.
+
+### Bestandsformaten
+
+| Invoer | Uitvoer | Video | Audio |
+| --- | --- | --- | --- |
+| `.mp4`, `.m4v`, `.mov` | zelfde container | H.264 (libx264) | ongewijzigd, anders AAC |
+| `.mkv` | `.mkv` | H.264 | ongewijzigd |
+| `.webm` | `.webm` | VP9 | ongewijzigd (Opus/Vorbis) |
+| overige (`.avi`, `.mpg`, …) | `.mp4` | H.264 | AAC als het niet past |
+
+Ondertitels gaan ongewijzigd mee. Het logo inbranden hercodeert de video en
+kost dus tijd: in onze test duurde een 1080p-video van 8 seconden ongeveer
+5 seconden (MacBook met Apple M-chip).
+
+### Hoe `ait logo` werkt
+
+1. ffprobe leest de resolutie, de rotatie en de pixelverhouding van de video.
+2. `ait` berekent lokaal de SHA-256 van het origineel.
+3. `POST /api/v1/label/remote` registreert het label; de server ondertekent het
+   manifest.
+4. `ait` tekent de badge zelf als PNG: het logo uit vormen, de tekst uit de
+   contouren van het lettertype. Er zijn geen npm-pakketten voor nodig.
+5. ffmpeg legt de PNG met het filter `overlay` over de video en schrijft in
+   dezelfde gang de AILABEL-tags (label-ID, handtekening, verify-URL en
+   `AILABEL_VISIBLE`, bijv. `logo rechtsboven, hele video`).
+6. `POST /api/v1/label/remote/complete` meldt de fingerprint van de video met
+   logo aan het register. De verify-pagina toont de techniek
+   `visible-label-overlay`.
+
+Waarom een eigen PNG en niet het ffmpeg-filter `drawtext`? De standaard
+Homebrew-ffmpeg (`brew install ffmpeg`) heeft geen `drawtext`. Het filter
+`overlay` zit in elke ffmpeg.
+
+Gebruik je een andere ffmpeg? Zet dan de omgevingsvariabelen `AIT_FFMPEG` en
+`AIT_FFPROBE` op het pad. `AIT_FONT` kiest een standaardlettertype.
 
 ## Hoe het werkt
 
@@ -163,6 +272,16 @@ embeds the label locally (stream copy). Requires an
 [AI Transparent](https://aitransparent.eu) API key (Pro/Premium) — labeling
 does not work without the service. `ait check` (detection) is public and
 needs no account.
+
+`ait logo <video>` burns a visible AI Transparent badge (logo plus a short
+disclosure such as "AI-generated") into a corner of the video, then labels the
+result the same way: signed in the registry, with the label ID and verify URL
+in the file's metadata. Options: `--positie lb|rb|lo|ro` (also `top-left` etc.,
+default top right), `--seconden <n>` (first *n* seconds only; default the whole
+video), `--tekst "…"`, `--geen-tekst`, `--met-id`, `--grootte <factor>`,
+`--voorbeeld` (render one PNG frame, no label). The badge scales with the
+shorter side of the frame (1/16) and is rendered in Node itself and composited
+with ffmpeg's `overlay` filter, so no `drawtext`/libfreetype is needed.
 
 `privacy-scan` (in [`privacy-scan/`](privacy-scan/)) scans files for personal
 data *before* they are uploaded to an AI service or shared with anyone else,

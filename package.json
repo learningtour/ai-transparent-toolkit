@@ -1,6 +1,6 @@
 {
   "name": "ai-transparent-toolkit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Lokaal grote (video)bestanden labelen conform Art. 50 EU AI Act; het ondertekende rapport komt in de online omgeving van AI Transparent (app.aitransparent.eu). De content zelf verlaat je machine nooit.",
   "type": "module",
   "bin": {
@@ -17,6 +17,7 @@
   "homepage": "https://aitransparent.eu",
   "files": [
     "ait.js",
+    "fonts/",
     "README.md",
     "LICENSE"
   ],
@@ -26,6 +27,9 @@
     "art-50",
     "labeling",
     "ffmpeg",
-    "video"
+    "video",
+    "logo",
+    "watermark",
+    "overlay"
   ]
 }
